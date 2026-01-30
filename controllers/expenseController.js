@@ -3,7 +3,7 @@ const Expense = require('../models/Expense');
 // Add expense
 exports.addExpense = async (req, res) => {
   try {
-    const { category, amount, comment } = req.body;
+    const { category, amount, comments } = req.body;
 
     if (!category || !amount) {
       return res.status(400).json({ message: 'Category and amount are required' });
@@ -13,7 +13,7 @@ exports.addExpense = async (req, res) => {
       user: req.user._id,
       category,
       amount,
-      comment,
+      comments,
     });
 
     res.status(201).json(expense);
@@ -28,7 +28,7 @@ exports.getExpenses = async (req, res) => {
     const expenses = await Expense.find({ user: req.user._id })
       .sort({ createdAt: -1 });
 
-    res.json(expenses);
+    res.json({ expenses });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -49,7 +49,7 @@ exports.updateExpense = async (req, res) => {
 
     expense.category = req.body.category || expense.category;
     expense.amount = req.body.amount || expense.amount;
-    expense.comment = req.body.comment || expense.comment;
+    expense.comments = req.body.comments !== undefined ? req.body.comments : expense.comments;
 
     const updatedExpense = await expense.save();
     res.json(updatedExpense);
